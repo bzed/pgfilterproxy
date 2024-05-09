@@ -22,7 +22,7 @@ type rawConfig struct {
 	TargetServer         string   `yaml:"target_server"`
 	AllowedFingerprints  []string `yaml:"allowed_fingerprints"`
 	AllowedCommands      []string `yaml:"allowed_commands"`
-	IgnoreUnixTimestamps bool
+	IgnoreUnixTimestamps bool     `yaml:"ignore_unix_timestamps"`
 }
 
 var (
