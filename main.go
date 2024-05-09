@@ -57,7 +57,7 @@ func main() {
 	clientMessageHandlers := proxy.NewClientMessageHandlers()
 	clientMessageHandlers.AddHandleQuery(func(ctx *proxy.Ctx, msg *message.Query) (query *message.Query, e error) {
 		query_string := msg.QueryString
-		_, ignore_epochs := GetConfig().IgnoreUnixTimestamps
+		ignore_epochs := GetConfig().IgnoreUnixTimestamps
 		if ignore_epochs {
 			query_string = replaceUnixTimestamps(query_string)
 		}
