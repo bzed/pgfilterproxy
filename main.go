@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 
@@ -29,6 +30,11 @@ func generateErrorQuery(msg string) string {
 	return fmt.Sprintf("'%s';", escapedMsg)
 }
 
+func replaceUnixTimestamps(msg string) string {
+	unixTsRe := regexp.MustCompile(`[0-9]{9,15}`)
+	unixTsRe.ReplaceAllString(msg, "0")
+	return msg
+}
 func main() {
 	inShutdown := false
 
@@ -50,7 +56,12 @@ func main() {
 
 	clientMessageHandlers := proxy.NewClientMessageHandlers()
 	clientMessageHandlers.AddHandleQuery(func(ctx *proxy.Ctx, msg *message.Query) (query *message.Query, e error) {
-		fingerprint, err := pg_query.Fingerprint(msg.QueryString)
+		query_string := msg.QueryString
+		_, ignore_epochs := GetConfig().IgnoreUnixTimestamps
+		if ignore_epochs {
+			query_string = replaceUnixTimestamps(query_string)
+		}
+		fingerprint, err := pg_query.Fingerprint(query_string)
 		if err != nil {
 			fmt.Printf("failed to parse query: %v: %s\n", err, sanitizeQueryStr(msg.QueryString))
 
