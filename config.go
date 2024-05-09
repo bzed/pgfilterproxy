@@ -10,17 +10,19 @@ import (
 )
 
 type Config struct {
-	Listen              string
-	TargetServer        string
-	AllowedFingerprints map[string]bool
-	AllowedCommands     map[byte]bool
+	Listen               string
+	TargetServer         string
+	AllowedFingerprints  map[string]bool
+	AllowedCommands      map[byte]bool
+	IgnoreUnixTimestamps bool
 }
 
 type rawConfig struct {
-	Listen              string   `yaml:"listen"`
-	TargetServer        string   `yaml:"target_server"`
-	AllowedFingerprints []string `yaml:"allowed_fingerprints"`
-	AllowedCommands     []string `yaml:"allowed_commands"`
+	Listen               string   `yaml:"listen"`
+	TargetServer         string   `yaml:"target_server"`
+	AllowedFingerprints  []string `yaml:"allowed_fingerprints"`
+	AllowedCommands      []string `yaml:"allowed_commands"`
+	IgnoreUnixTimestamps bool
 }
 
 var (
@@ -55,6 +57,7 @@ func loadConfig(path string) error {
 		}
 		tempConfig.AllowedCommands[command[0]] = true
 	}
+	tempConfig.IgnoreUnixTimestamps = rawConfig.IgnoreUnixTimestamps
 
 	configLock.Lock()
 	config = tempConfig
